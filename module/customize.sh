@@ -1,101 +1,53 @@
 #!/system/bin/sh
 
-ui_print " [+] Starting module customization..."
+SKIPUNZIP=1
 
-# Detect congestion algorithm
-ui_print " [+] Checking TCP congestion algorithm..."
-if grep -qw bbr /proc/sys/net/ipv4/tcp_available_congestion_control; then
-    CONG="bbr"
-    ui_print " [+] Found BBR!"
-else
-    CONG="cubic"
-    ui_print " [+] BBR not found. Going with Cubic!"
-fi
+ui_print "- Setting permissions"
+set_perm_recursive $MODPATH 0 0 0755 0644
+set_perm_recursive $MODPATH/webroot 0 0 0755 0644
+set_perm $MODPATH/service.sh 0 0 0755
+set_perm $MODPATH/post-fs-data.sh 0 0 0755
 
-MODULE_NAME=$(basename "$MODPATH")
-MODULE_PATH="/data/adb/modules/$MODULE_NAME"
+ui_print "- Extracting module files"
+unzip -o "$ZIPFILE" -x 'META-INF/*' -d $MODPATH >&2
 
-# Check both live and update folders
-check_exists_anywhere() {
-    local prefix="$1"
+ui_print "- Creating directories"
+mkdir -p $MODPATH/webroot/css
+mkdir -p $MODPATH/webroot/js
+mkdir -p $MODPATH/webroot/pages
+mkdir -p $MODPATH/webroot/icons
 
-    # Check in current path
-    if ls "$MODPATH"/${prefix}_* >/dev/null 2>&1; then
-        return 0
-    fi
-    
-    # Check in Module main path
-    if ls "$MODULE_PATH"/${prefix}_* >/dev/null 2>&1; then
-        return 0
-    fi
+ui_print "- Copying files"
 
-    return 1
-}
+# Core module files (no app.py)
+cp -f $MODPATH/module.prop $MODPATH/
+cp -f $MODPATH/service.sh $MODPATH/
+cp -f $MODPATH/post-fs-data.sh $MODPATH/
+cp -f $MODPATH/system.prop $MODPATH/
+cp -f $MODPATH/utils.sh $MODPATH/
+cp -f $MODPATH/tcp_optimizer.py $MODPATH/
 
-create_file_if_needed() {
-    local prefix="$1"
-    local suffix="$2"
-    local target="$MODPATH/${prefix}_${suffix}"
+# Web files
+cp -rf $MODPATH/webroot/css/* $MODPATH/webroot/css/ 2>/dev/null
+cp -rf $MODPATH/webroot/js/* $MODPATH/webroot/js/ 2>/dev/null
+cp -rf $MODPATH/webroot/pages/* $MODPATH/webroot/pages/ 2>/dev/null
+cp -rf $MODPATH/webroot/icons/* $MODPATH/webroot/icons/ 2>/dev/null
+cp -f $MODPATH/webroot/index.html $MODPATH/webroot/ 2>/dev/null
 
-    if check_exists_anywhere "$prefix"; then
-        # If file exists and KSU is true, copy any file from MODULEPATH with the same prefix
-        if [ "$KSU" = true ]; then
-            # Find any file starting with ${prefix}_ in MODULEPATH and copy it to MODPATH
-            source_file=$(find "$MODULE_PATH" -name "${prefix}_*" -print -quit)
-            if [ -n "$source_file" ]; then
-                cp "$source_file" "$MODPATH/"
-                
-                file_name=$(basename "$source_file")
-                ui_print " [+] Copied from $MODULE_PATH to $MODPATH: $file_name"
-            fi
-        else
-            ui_print " [-] Skipping $target: file already exists."
-        fi
-        return
-    fi
+# Set final permissions
+ui_print "- Setting final permissions"
+chmod 755 $MODPATH/*.sh
+chmod 644 $MODPATH/*.py
+chmod 644 $MODPATH/*.prop
+chmod 644 $MODPATH/webroot/*.html
+chmod 644 $MODPATH/webroot/css/*.css
+chmod 644 $MODPATH/webroot/js/*.js
+chmod 644 $MODPATH/webroot/pages/*.html
+chmod 644 $MODPATH/webroot/icons/*.svg
 
-    if [ ! -f "$target" ]; then
-        touch "$target"
-        ui_print " [+] Created: $target"
-    else
-        ui_print " [-] Skipped: $target already exists"
-    fi
-}
+# Create service log directory
+mkdir -p /data/adb/tcp_optimiser
 
-# Create wlan_* based on BBR availability
-if [ "$CONG" = "bbr" ]; then
-    create_file_if_needed "wlan" "bbr"
-else
-    create_file_if_needed "wlan" "cubic"
-fi
-
-# Always create rmnet_data_cubic unless another exists
-create_file_if_needed "rmnet_data" "cubic"
-
-if check_exists_anywhere "kill"; then
-    # If file exists and KSU is true, copy any file from MODULEPATH with the same prefix
-    if [ "$KSU" = true ]; then
-        # Find any file starting with ${prefix}_ in MODULEPATH and copy it to MODPATH
-        source_file=$(find "$MODULE_PATH" -name "kill_connections" -print -quit)
-        if [ -n "$source_file" ]; then
-            cp "$source_file" "$MODPATH/"
-            ui_print " [+] Copied from $MODULE_PATH to $MODPATH: kill_connections"
-        fi
-    else
-        ui_print " [-] Skipping $MODPATH/kill_connections: file already exists."
-    fi
-fi
-
-if check_exists_anywhere "initcwnd"; then
-    # If file exists and KSU is true, copy any file from MODULEPATH with the same prefix
-    if [ "$KSU" = true ]; then
-        # Find any file starting with ${prefix}_ in MODULEPATH and copy it to MODPATH
-        source_file=$(find "$MODULE_PATH" -name "initcwnd_initrwnd" -print -quit)
-        if [ -n "$source_file" ]; then
-            cp "$source_file" "$MODPATH/"
-            ui_print " [+] Copied from $MODULE_PATH to $MODPATH: initcwnd_initrwnd"
-        fi
-    else
-        ui_print " [-] Skipping $MODPATH/initcwnd_initrwnd: file already exists."
-    fi
-fi
+ui_print "- TCP Optimiser with CAKE installation completed"
+ui_print "- Web interface: http://localhost:5000"
+ui_print "- Version: 2.5 by deepongi"

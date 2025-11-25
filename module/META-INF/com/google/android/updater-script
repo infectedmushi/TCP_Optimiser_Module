@@ -1,1 +1,22 @@
-#MAGISK
+# META-INF/com/google/android/updater-script
+ui_print("*******************************");
+ui_print(" TCP Optimiser with CAKE v2.5 ");
+ui_print("    by deepongi                ");
+ui_print("*******************************");
+
+show_progress(1.000000, 0);
+
+ui_print("Extracting module files...");
+package_extract_dir(".", MODPATH);
+
+ui_print("Setting permissions...");
+set_metadata_recursive(MODPATH, "uid", 0, "gid", 0, "dmode", 0755, "fmode", 0644, "capabilities", 0x0, "selabel", "u:object_r:system_file:s0");
+set_metadata_recursive(MODPATH + "/webroot", "uid", 0, "gid", 0, "dmode", 0755, "fmode", 0644, "capabilities", 0x0, "selabel", "u:object_r:system_file:s0");
+
+# Set executable permissions for scripts
+set_metadata(MODPATH + "/service.sh", "uid", 0, "gid", 0, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:system_file:s0");
+set_metadata(MODPATH + "/post-fs-data.sh", "uid", 0, "gid", 0, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:system_file:s0");
+set_metadata(MODPATH + "/customize.sh", "uid", 0, "gid", 0, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:system_file:s0");
+
+ui_print("Installation completed!");
+show_progress(1.000000, 0);
