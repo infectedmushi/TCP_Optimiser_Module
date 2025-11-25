@@ -12,6 +12,12 @@ NC='\033[0m' # No Color
 
 echo -e "${GREEN}🚀 Building TCP Optimiser Module with CAKE Support...${NC}"
 
+# Set executable permissions before building
+echo -e "${YELLOW}🔧 Setting file permissions...${NC}"
+chmod 755 *.sh
+chmod 755 META-INF/com/google/android/update-binary
+echo -e "${GREEN}✅ Permissions set${NC}"
+
 # Read version from module.prop
 if [ -f "module.prop" ]; then
     VERSION=$(grep "version=" module.prop | cut -d'=' -f2)
@@ -55,7 +61,41 @@ cp -r META-INF "$BUILD_DIR/"
 echo -e "${GREEN}📁 Copying webroot...${NC}"
 cp -r webroot "$BUILD_DIR/"
 
-# Verify critical files
+# Set permissions in build directory
+echo -e "${YELLOW}🔧 Setting permissions in build directory...${NC}"
+chmod 755 "$BUILD_DIR"/*.sh
+chmod 755 "$BUILD_DIR/META-INF/com/google/android/update-binary"
+chmod 644 "$BUILD_DIR"/*.py 2>/dev/null || true
+chmod 644 "$BUILD_DIR"/webroot/css/*.css
+chmod 644 "$BUILD_DIR"/webroot/js/*.js
+chmod 644 "$BUILD_DIR"/webroot/pages/*.html
+chmod 644 "$BUILD_DIR"/webroot/icons/*.svg
+chmod 644 "$BUILD_DIR"/webroot/index.html
+
+# Verify critical files have correct permissions
+echo -e "\n${GREEN}🔍 Verifying file permissions...${NC}"
+critical_executables=(
+    "service.sh"
+    "post-fs-data.sh" 
+    "customize.sh"
+    "utils.sh"
+    "META-INF/com/google/android/update-binary"
+)
+
+for file in "${critical_executables[@]}"; do
+    if [ -f "$BUILD_DIR/$file" ]; then
+        perms=$(stat -c "%a" "$BUILD_DIR/$file")
+        if [ "$perms" = "755" ]; then
+            echo -e "  ✅ $file: $perms"
+        else
+            echo -e "  ❌ $file: $perms (should be 755)"
+            chmod 755 "$BUILD_DIR/$file"
+            echo -e "  🔧 Fixed: $file"
+        fi
+    fi
+done
+
+# Verify critical files exist
 echo -e "\n${GREEN}🔍 Verifying critical files...${NC}"
 
 critical_files=(
@@ -112,27 +152,15 @@ cat > "$BUILD_DIR/CHANGELOG.md" << EOF
 ## Build $TIMESTAMP
 ## Developer: $AUTHOR
 
-### What's New in v2.5:
+### What's New in v${VERSION}:
 - 🎉 **MAJOR UPDATE**: Integrated CAKE Queuing Discipline
 - 🌐 **New Web Interface**: Dedicated CAKE optimization page
 - 🚀 **Enhanced Performance**: Multiple optimization presets
 - 📊 **Real-time Monitoring**: Live network status updates
-- 🎮 **Gaming Optimization**: Low latency CAKE preset
-- 📺 **Streaming Optimization**: Stable bandwidth preset
-- 📶 **Wireless Optimization**: WiFi-specific CAKE settings
-- 🛰️ **High Latency Support**: Satellite/cellular optimization
 
-### CAKE Features:
-- **General**: Balanced settings for everyday use
-- **Gaming**: Low latency optimization for online games
-- **Streaming**: Stable bandwidth for video streaming
-- **Wireless**: Optimized for WiFi networks
-- **High Latency**: Better performance on satellite/cellular links
-
-### Supported Algorithms:
-- BBR (Recommended for most use cases)
-- CUBIC (Traditional Linux algorithm)
-- Reno (Basic congestion control)
+### File Permissions:
+All shell scripts are set to 755 (executable)
+Web files are set to 644 (readable)
 
 ### File Structure:
 \`\`\`
@@ -141,51 +169,6 @@ cat > "$BUILD_DIR/CHANGELOG.md" << EOF
 
 Built: $(date)
 Developer: $AUTHOR
-EOF
-
-# Create README file
-cat > "$BUILD_DIR/README.md" << EOF
-# TCP Optimiser with CAKE v${VERSION}
-
-A Magisk/KernelSU module for TCP optimization with CAKE queuing discipline support.
-
-## Features
-
-- ✅ **CAKE Queuing Discipline** - Advanced traffic shaping
-- ✅ **Web Management Interface** - Easy browser-based control
-- ✅ **Multiple Congestion Controls** - BBR, CUBIC, Reno
-- ✅ **Optimization Presets** - Gaming, Streaming, Wireless, etc.
-- ✅ **Real-time Monitoring** - Live network status
-- ✅ **KernelSU Integration** - Rootless operation support
-
-## Installation
-
-1. Flash the zip file in Magisk/KernelSU
-2. Reboot your device
-3. Access web interface at: http://localhost:5000
-
-## Web Interface
-
-After installation, navigate to:
-- **Home**: Overall module status
-- **Settings**: Configuration options
-- **CAKE**: CAKE optimization presets
-- **Logs**: Operation logs
-
-## CAKE Presets
-
-- **General**: Balanced everyday use
-- **Gaming**: Low latency for games
-- **Streaming**: Stable video streaming
-- **Wireless**: WiFi optimization
-- **High Latency**: Satellite/cellular links
-
-## Developer
-
-**$AUTHOR**
-
-Built: $(date)
-Version: ${VERSION} (${VERSION_CODE})
 EOF
 
 echo -e "\n${GREEN}📦 Creating Magisk module zip...${NC}"
@@ -208,50 +191,13 @@ if [ -f "$OUTPUT_ZIP" ]; then
     echo -e "${GREEN}📊 Size: $SIZE${NC}"
     echo -e "${GREEN}📄 Files: $FILE_COUNT${NC}"
     
-    # Show module info
-    echo -e "\n${YELLOW}📋 Module Information:${NC}"
-    echo -e "  Name:     $MODULE_NAME"
-    echo -e "  Version:  $VERSION ($VERSION_CODE)"
-    echo -e "  Developer: $AUTHOR"
-    echo -e "  ID:       $MODULE_ID"
-    
-    echo -e "\n${YELLOW}🎯 Features Included:${NC}"
-    echo -e "  • TCP Congestion Control optimization"
-    echo -e "  • CAKE Queuing Discipline support"
-    echo -e "  • Web-based management interface"
-    echo -e "  • Real-time network status monitoring"
-    echo -e "  • Multiple optimization presets"
-    echo -e "  • KernelSU integration"
-    
-    echo -e "\n${YELLOW}🌐 Web Interface:${NC}"
-    echo -e "  After installation, access at:"
-    echo -e "  http://localhost:5000"
-    echo -e "  or"
-    echo -e "  http://[device-ip]:5000"
-    
-    echo -e "\n${GREEN}📥 Installation:${NC}"
-    echo -e "  1. Flash $OUTPUT_ZIP in Magisk/KernelSU"
-    echo -e "  2. Reboot your device"
-    echo -e "  3. Access web interface"
-    echo -e "  4. Navigate to 'CAKE' tab for QoS optimization"
-    
-    echo -e "\n${YELLOW}🔧 CAKE Optimization:${NC}"
-    echo -e "  Available in the CAKE tab:"
-    echo -e "  • Congestion Control: BBR, CUBIC, Reno"
-    echo -e "  • CAKE Presets: General, Gaming, Streaming, Wireless, High Latency"
-    echo -e "  • Real-time status monitoring"
+    # Show permissions in zip
+    echo -e "\n${YELLOW}🔧 File permissions in zip:${NC}"
+    unzip -v "$OUTPUT_ZIP" | grep -E "\.sh$|update-binary" | head -10
     
 else
     echo -e "${RED}❌ Build failed!${NC}"
     exit 1
 fi
 
-# Create quick verification
-echo -e "\n${GREEN}🔍 Quick verification...${NC}"
-unzip -l "$OUTPUT_ZIP" | grep -E "(cake|CAKE)" | head -5 | while read line; do
-    echo -e "  📄 $line"
-done
-
 echo -e "\n${GREEN}🎉 Build completed successfully!${NC}"
-echo -e "${GREEN}👨‍💻 Developer: $AUTHOR${NC}"
-echo -e "${GREEN}🏷️  Version: $VERSION${NC}"
