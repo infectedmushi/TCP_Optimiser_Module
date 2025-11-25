@@ -1,0 +1,109 @@
+<!-- pages/cake.html -->
+<div class="page" id="cake-page">
+    <div class="cake-section">
+        <div class="cake-card">
+            <h3>📊 Current Status</h3>
+            <div class="status-grid">
+                <div class="status-item">
+                    <span class="status-label">Network Interface</span>
+                    <span id="interface-status" class="status-value">Detecting...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">CAKE Support</span>
+                    <span id="cake-available-status" class="status-value">Checking...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">CAKE Status</span>
+                    <span id="cake-active-status" class="status-value">Checking...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Congestion Control</span>
+                    <span id="cc-status" class="status-value">Checking...</span>
+                </div>
+            </div>
+            <button id="refresh-status" class="btn-refresh">🔄 Refresh Status</button>
+        </div>
+
+        <div class="cake-card">
+            <h3>⚡ Quick Optimization</h3>
+            <div class="optimization-form">
+                <div class="form-group">
+                    <label for="cc-algorithm">Congestion Control</label>
+                    <select id="cc-algorithm" class="form-select">
+                        <option value="bbr">BBR</option>
+                        <option value="cubic">CUBIC</option>
+                        <option value="reno">Reno</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="cake-preset">CAKE Preset</label>
+                    <select id="cake-preset" class="form-select">
+                        <option value="general">General Purpose</option>
+                        <option value="gaming">Gaming</option>
+                        <option value="streaming">Streaming</option>
+                        <option value="wireless">Wireless</option>
+                        <option value="high_latency">High Latency</option>
+                    </select>
+                </div>
+                
+                <button id="apply-optimization" class="btn-optimize">Apply Optimization</button>
+            </div>
+        </div>
+
+        <div class="cake-card">
+            <h3>🎯 CAKE Presets</h3>
+            <div class="presets-grid">
+                <div class="preset-card">
+                    <h4>General Purpose</h4>
+                    <p>Balanced settings for everyday internet usage</p>
+                    <ul class="preset-features">
+                        <li>Bandwidth: 1 Gbps</li>
+                        <li>Dual-srchost fairness</li>
+                        <li>Optimal for mixed usage</li>
+                    </ul>
+                </div>
+                
+                <div class="preset-card">
+                    <h4>Gaming / Low Latency</h4>
+                    <p>Optimized for online gaming and real-time applications</p>
+                    <ul class="preset-features">
+                        <li>Bandwidth: 100 Mbps</li>
+                        <li>RTT: 50ms target</li>
+                        <li>Dual-dsthost fairness</li>
+                    </ul>
+                </div>
+                
+                <div class="preset-card">
+                    <h4>Streaming</h4>
+                    <p>Stable bandwidth for video streaming and downloads</p>
+                    <ul class="preset-features">
+                        <li>Bandwidth: 500 Mbps</li>
+                        <li>Memory limit: 64MB</li>
+                        <li>Buffer bloat control</li>
+                    </ul>
+                </div>
+                
+                <div class="preset-card">
+                    <h4>Wireless</h4>
+                    <p>Optimized for WiFi and wireless networks</p>
+                    <ul class="preset-features">
+                        <li>Bandwidth: 100 Mbps</li>
+                        <li>Wireless mode enabled</li>
+                        <li>Dual-dsthost fairness</li>
+                    </ul>
+                </div>
+                
+                <div class="preset-card">
+                    <h4>High Latency</h4>
+                    <p>For satellite, cellular, or high-latency connections</p>
+                    <ul class="preset-features">
+                        <li>Bandwidth: 50 Mbps</li>
+                        <li>RTT: 500ms target</li>
+                        <li>Raw mode for lossy links</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

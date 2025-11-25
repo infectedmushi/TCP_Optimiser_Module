@@ -63,6 +63,10 @@ const realtimeUpdater = async () => {
 				case 'logs':
 					updateLogsUI();
 					break;
+					
+				case 'cake':
+					// CAKE page doesn't need real-time updates
+					break;
 			}
 		}
 		
@@ -78,14 +82,41 @@ const realtimeUpdater = async () => {
 						break;
 					
 					case 'logs':
-					updateLogsUI();
-					break;
+						updateLogsUI();
+						break;
+						
+					case 'cake':
+						// CAKE page doesn't need real-time updates
+						break;
 				}
 			}
 		}, "5000");
 	} catch (error) {
 		console.error('Error setting update loop: ', error);
 		addLog('Error setting update loop.');
+	}
+};
+
+// CAKE-specific functions
+const initCake = async () => {
+	try {
+		// Import and initialize CAKE module
+		const cakeModule = await import('./cake.js');
+		if (cakeModule && cakeModule.CakeOptimizerUI) {
+			window.cakeOptimizer = new cakeModule.CakeOptimizerUI();
+		}
+	} catch (error) {
+		console.error('Error initializing CAKE page:', error);
+		addLog('Error initializing CAKE optimizer.');
+	}
+};
+
+const updateCakeUI = async () => {
+	// CAKE UI updates are handled by its own class
+	// This function can be used for global CAKE status updates if needed
+	if (window.cakeOptimizer && typeof window.cakeOptimizer.loadStatus === 'function') {
+		// Optional: Refresh CAKE status when returning to the page
+		// window.cakeOptimizer.loadStatus();
 	}
 };
 
@@ -126,6 +157,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 								break;
 							case 'logs':
 								module.initLogs();
+								break;
+							case 'cake':
+								initCake();
 								break;
 						}
 						
@@ -170,3 +204,4 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 export default router_state;
+export { initCake, updateCakeUI };

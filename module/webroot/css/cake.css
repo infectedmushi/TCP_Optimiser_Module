@@ -1,0 +1,246 @@
+/* css/cake.css */
+#cake-page {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.cake-section {
+    margin-bottom: 30px;
+}
+
+.cake-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cake-card h3 {
+    margin: 0 0 15px 0;
+    color: var(--text-primary);
+    font-size: 1.2em;
+    font-weight: 600;
+}
+
+.status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.status-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.status-label {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.status-value {
+    font-size: 1em;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.status-value.active {
+    color: #10b981;
+}
+
+.status-value.inactive {
+    color: #ef4444;
+}
+
+.status-value.warning {
+    color: #f59e0b;
+}
+
+.optimization-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 15px;
+    align-items: end;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.form-select {
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.btn-optimize {
+    padding: 10px 20px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-optimize:hover {
+    background: var(--primary-dark);
+}
+
+.btn-optimize:disabled {
+    background: var(--text-tertiary);
+    cursor: not-allowed;
+}
+
+.btn-refresh {
+    padding: 8px 16px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-refresh:hover {
+    background: var(--border-light);
+}
+
+.presets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.preset-card {
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 15px;
+    border-left: 4px solid var(--primary-color);
+    transition: transform 0.2s ease;
+}
+
+.preset-card:hover {
+    transform: translateY(-2px);
+}
+
+.preset-card h4 {
+    margin: 0 0 8px 0;
+    color: var(--text-primary);
+    font-size: 1.1em;
+}
+
+.preset-card p {
+    margin: 0 0 10px 0;
+    color: var(--text-secondary);
+    font-size: 0.9em;
+    line-height: 1.4;
+}
+
+.preset-features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.preset-features li {
+    font-size: 0.85em;
+    color: var(--text-secondary);
+    margin-bottom: 3px;
+    padding-left: 12px;
+    position: relative;
+}
+
+.preset-features li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: var(--primary-color);
+}
+
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    z-index: 1000;
+    animation: slideIn 0.3s ease;
+}
+
+.notification.success {
+    background: #10b981;
+}
+
+.notification.error {
+    background: #ef4444;
+}
+
+.notification.info {
+    background: #3b82f6;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .optimization-form {
+        grid-template-columns: 1fr;
+    }
+    
+    .status-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .presets-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    #cake-page {
+        padding: 15px;
+    }
+}
+
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
